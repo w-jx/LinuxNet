@@ -63,70 +63,48 @@ int main()
         if (ret > 0)
         { //说明有客户端连接
             for (i = 0; i < ret; i++)
-            
-         {
-             if (ep[i].events & EPOLLIN)
-             { //lfd满足监听的读事件
-             if (ep[i].data.fd==lfd) //判断是不是lfd
-                 clit_addr_len = sizeof(clit_addr);
-                 cfd = Accept(lfd, (struct sockaddr *)&clit_addr, &clit_addr_len);
-                 //注意这个accept()不会阻塞
-                 for (i = 1; i < FD_SETSIZE; i++)
-                 { //找到client[]空闲的位置
-                     if (client[i].fd < 0)
-                     {
-                         client[i].fd = cfd;
-                         break;
-                     }
-                 }
-                 if (i == FD_SETSIZE)
-                 {
-                     fputs("too many clients\n", stderr);
-                     exit(1);
-                 }
-                 client[i].events = POLLIN;
-                 if (i > maxi)
-                     maxi = i; //保证maxi存储的总是client[]最大的下标
-                 if (ret == 1)
-                     continue;
-             } //client[0].revents &POLLIN
-            for (i = 1; i <= maxi; i++)
+
             {
-                if ((sockfd = client[i].fd) < 0)
-                    continue;
-                if (client[i].revents & POLLIN)
-                { //找到满足读事件的fd
-                    if ((n = read(sockfd, buf, sizeof(buf))) == 0)
-                    { //客户端关闭连接了，服务器端也应该关闭对应连接
-                        close(sockfd);
-                        client[i].fd = -1;
+                if (ep[i].events & EPOLLIN)
+                { //lfd满足监听的读事件
+                    if (ep[i].data.fd==lfd) {//判断满足事件的fd是不是lfd
+                        clit_addr_len = sizeof(clit_addr);
+                        cfd = Accept(lfd, (struct sockaddr *)&clit_addr, &clit_addr_len);
+                        //注意这个accept()不会阻塞
+                        tep.events = EPOLLIN;
+                        tep.data.fd = cfd;
+                        ret = epoll_ctl(efd,EPOLL_CTL_ADD,cfd,&tep);//假如红黑树
+                        if (ret < 0)
+                            geterror("epoll ctl error");
                     }
-                    else if (n > 0)
-                    {
-                        for (int j = 0; j < n; j++)
-                            buf[j] = toupper(buf[j]);
-                        write(sockfd, buf, n);
-                        write(STDOUT_FILENO, buf, n);
-                    }
-                    else if (n == -1)
-                    {
-                        if (errno == ECONNRESET)
-                        { //收到重置标志
+                    else {//满足事件的fd不是lfd
+
+                        sockfd = ep[i].data.fd;
+                        n=read(sockfd,buf,sizeof(buf));
+
+                        if(n==0)  { //读到0，说明客户端关闭连接
+                            ret = epoll_ctl(efd,EPOLL_CTL_DEL,sockfd,NULL);
+                            if (ret==-1) 
+                                geterror("epoll ctl error");
                             close(sockfd);
-                            client[i].fd = -1; //
+                            printf("client[%d] close connection\n",sockfd);
+
                         }
-                        else
+                        else if (n==-1)
                             geterror("read error");
-                    }
-                    if (ret == 1)
-                        break; //跳出for
-                }
-            }
+                        else if (n>0) {
+                            for(int j=0;j<n;j++) 
+                                buf[j]=toupper(buf[j]);
+                            //write(STDOUT_FILENO,buf,n);
+                            //write(sockfd,buf,n);
+                            write(sockfd,buf,sizeof(buf));
 
-
-            }
-        }
-    }
+                        }//if (n>0)
+                    }//else 不是lfd
+                }//ep[i].events
+            }//for
+        }//if (ret>0)
+    }//while
     close(cfd);
     return 0;
 }

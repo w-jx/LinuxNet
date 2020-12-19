@@ -48,7 +48,7 @@ void *do_work(void*arg)
 
     }
     close(ts->cfd);
-    return (void*)0;
+    return (void*)0;//等同于pthread_exit(0);
 
 }
 int main(){
