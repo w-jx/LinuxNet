@@ -28,7 +28,7 @@ int main()
     int ret = 0;
     int n;
     int maxi = 0; //数组有效下标
-    char buf[BUFSIZ];
+    char buf[BUFSIZ],ip[32];
     int efd; //epoll_create返回值
 
     lfd = Socket(AF_INET, SOCK_STREAM, 0);
@@ -71,6 +71,7 @@ int main()
                         clit_addr_len = sizeof(clit_addr);
                         cfd = Accept(lfd, (struct sockaddr *)&clit_addr, &clit_addr_len);
                         //注意这个accept()不会阻塞
+                        printf("clinet from %s and port%d\n",inet_ntop(AF_INET,&clit_addr.sin_addr,ip,sizeof(ip)),ntohs(clit_addr.sin_port));
                         tep.events = EPOLLIN;
                         tep.data.fd = cfd;
                         ret = epoll_ctl(efd,EPOLL_CTL_ADD,cfd,&tep);//假如红黑树
@@ -96,8 +97,8 @@ int main()
                             for(int j=0;j<n;j++) 
                                 buf[j]=toupper(buf[j]);
                             //write(STDOUT_FILENO,buf,n);
-                            //write(sockfd,buf,n);
-                            write(sockfd,buf,sizeof(buf));
+                            write(sockfd,buf,n);
+                            //write(sockfd,buf,sizeof(buf));//实际读的没这么多，会乱码
 
                         }//if (n>0)
                     }//else 不是lfd
