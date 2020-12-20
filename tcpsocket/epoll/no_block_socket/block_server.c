@@ -51,8 +51,8 @@ int main()
     efd = epoll_create(10);
     int res, len, flag;
 
-   // event.events=EPOLLIN|EPOLLET;//边沿触发，默认水平触发
-    event.events=EPOLLIN;
+   event.events=EPOLLIN|EPOLLET;//边沿触发，默认水平触发
+    //event.events=EPOLLIN;
     printf("waiting for connections");
     clit_addr_len = sizeof(clit_addr);
     cfd = Accept(lfd, (struct sockaddr *)&clit_addr, &clit_addr_len);

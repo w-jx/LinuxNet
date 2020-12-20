@@ -58,9 +58,9 @@ int main()
     cfd = Accept(lfd, (struct sockaddr *)&clit_addr, &clit_addr_len);
     printf("clinet from %s and port%d\n", inet_ntop(AF_INET, &clit_addr.sin_addr, ip, sizeof(ip)), ntohs(clit_addr.sin_port));
 
-    //flag = fcntl(cfd, F_GETFL); //先获取位图设置
-    //flag |= O_NONBLOCK;         //添加非阻塞属性
-    //fcntl(cfd, F_SETFL, flag);  //设置属性
+    flag = fcntl(cfd, F_GETFL); //先获取位图设置
+    flag |= O_NONBLOCK;         //添加非阻塞属性
+    fcntl(cfd, F_SETFL, flag);  //设置属性
 
     event.data.fd =cfd;
     epoll_ctl(efd,EPOLL_CTL_ADD,cfd,&event);//将cfd添加到监听红黑树
