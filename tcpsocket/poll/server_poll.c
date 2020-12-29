@@ -88,7 +88,7 @@ int main(){
                         write(STDOUT_FILENO, buf, n);
                     }
                     else if (n==-1) {
-                        if (errno == ECONNRESET) {//收到重置标志
+                        if (errno == ECONNRESET) {//收到重置标志,RST标志
                                 close(sockfd);
                                 client[i].fd=-1;//
                         }
