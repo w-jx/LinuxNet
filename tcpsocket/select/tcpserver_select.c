@@ -78,6 +78,6 @@ int main(){
             }//for(i=lfd+1....)
         }//if(ret>0)
     }//while(1)
-    close(cfd);
+    close(lfd);
     return 0;
 }

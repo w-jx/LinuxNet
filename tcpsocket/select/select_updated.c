@@ -105,7 +105,7 @@ int main()
                         write(sockfd, buf, n);
                         write(STDOUT_FILENO, buf, n);
                     }
-                    if (ret == 0)
+                    if (ret == 1)
                         break; //跳出for
                 }//sockfd在监听集合中
             }//for循环，i<=maxi
