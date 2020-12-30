@@ -56,7 +56,12 @@ void eventset(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *),
 
 void eventadd(int efd, int events, struct myevent_s *ev)
 {
-    struct epoll_event epv = {0, {0}};
+    struct epoll_event epv = {0, {0}};//初始化 0 {0}
+    // struct epoll_event
+    // {
+    //     uint32_t events;	/* Epoll events */
+    //     epoll_data_t data;	/* User data variable */
+    // } __EPOLL_PACKED;
     int op;
     epv.data.ptr = ev;
     epv.events = ev->events = events;       //EPOLLIN 或 EPOLLOUT
