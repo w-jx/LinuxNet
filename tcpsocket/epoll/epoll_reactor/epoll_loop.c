@@ -37,7 +37,7 @@ struct myevent_s g_events[MAX_EVENTS+1];                    //自定义结构体
 
 
 /*将结构体 myevent_s 成员变量 初始化*/
-
+//eventset(&g_events[MAX_EVENTS], lfd, acceptconn, &g_events[MAX_EVENTS]);
 void eventset(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *), void *arg)
 {
     ev->fd = fd;
@@ -202,7 +202,7 @@ void initlistensocket(int efd, short port)
     struct sockaddr_in sin;
     memset(&sin, 0, sizeof(sin)); //bzero(&sin, sizeof(sin))
     sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = INADDR_ANY;
+	sin.sin_addr.s_addr = htonl(INADDR_ANY);
 	sin.sin_port = htons(port);
 
 	bind(lfd, (struct sockaddr *)&sin, sizeof(sin));

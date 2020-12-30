@@ -74,7 +74,7 @@ int main()
                         printf("clinet from %s and port%d\n",inet_ntop(AF_INET,&clit_addr.sin_addr,ip,sizeof(ip)),ntohs(clit_addr.sin_port));
                         tep.events = EPOLLIN;
                         tep.data.fd = cfd;
-                        ret = epoll_ctl(efd,EPOLL_CTL_ADD,cfd,&tep);//假如红黑树
+                        ret = epoll_ctl(efd,EPOLL_CTL_ADD,cfd,&tep);//加入红黑树
                         if (ret < 0)
                             geterror("epoll ctl error");
                     }
