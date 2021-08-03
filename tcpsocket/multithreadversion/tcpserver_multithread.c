@@ -54,7 +54,8 @@ void *do_work(void*arg)
 
 }
 int main(){
-    int lfd=0;
+    int lfd=0;//原来写的，都没有创建套接字
+    lfd = Socket(AF_INET,SOCK_STREAM,0);
     int cfd=0;
     pthread_t tid;//线程
     int i = 0;

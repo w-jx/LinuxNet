@@ -32,7 +32,7 @@ int main()
 
     while (fgets(buf,BUFSIZ,stdin)!=NULL)
     {
-
+        //注意是strlen，因为需要实际大小
         n = sendto(sockfd, buf, strlen(buf), 0, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
         if (n == -1)
             perror("sendto error");

@@ -63,7 +63,7 @@ int main(){
                 write(cfd,buf,ret);
                 write(STDOUT_FILENO,buf,ret);
             }
-        }
+        } //pid ==0
         else  {//父进程 注册SIGCHID回收
             close(cfd);
             continue;
