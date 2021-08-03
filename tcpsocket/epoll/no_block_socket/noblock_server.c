@@ -25,7 +25,7 @@ int main()
     int lfd = 0;
     int cfd = 0;
     int sockfd;
-    int maxfd = 0; //最大的文件描述符
+    
     int i = 0;
     int ret = 0;
     int n;

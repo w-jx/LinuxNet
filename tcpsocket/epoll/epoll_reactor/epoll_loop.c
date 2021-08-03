@@ -215,9 +215,10 @@ void initlistensocket(int efd, short port)
 	listen(lfd, 20);
 
     /* void eventset(struct myevent_s *ev, int fd, void (*call_back)(int, int, void *), void *arg);  */
-    eventset(&g_events[MAX_EVENTS], lfd, acceptconn, &g_events[MAX_EVENTS]);
+    eventset(&g_events[MAX_EVENTS], lfd, acceptconn, &g_events[MAX_EVENTS]);// g_events[MAX_EVENTS+1] 最后一个元素
 
     /* void eventadd(int efd, int events, struct myevent_s *ev) */
+    //参数1：监听红黑树根，参数2：epoll监听事件  参数3：自定义封装事件
     eventadd(efd, EPOLLIN, &g_events[MAX_EVENTS]);
 
     
@@ -237,7 +238,7 @@ int main(int argc, char *argv[])
 
     initlistensocket(g_efd, port);                      //初始化监听socket
 
-    struct epoll_event events[MAX_EVENTS+1];            //保存已经满足就绪事件的文件描述符数组 
+    struct epoll_event events[MAX_EVENTS+1];            //保存已经满足就绪事件的文件描述符数组，epoll_wait函数参数
 	printf("server running:port[%d]\n", port);
 
     int checkpos = 0, i;
@@ -260,8 +261,8 @@ int main(int argc, char *argv[])
             }
         }
 
-        /*监听红黑树g_efd, 将满足的事件的文件描述符加至events数组中, 1秒没有事件满足, 返回 0*/
-        int nfd = epoll_wait(g_efd, events, MAX_EVENTS+1, 1000);
+        /*监听红黑树g_efd, 将满足的事件的文件描述符加至events数组中, 1秒没有事件满足, 返回  参数4超时时间是毫秒 0*/
+        int nfd = epoll_wait(g_efd, events, MAX_EVENTS+1, 1000);//235行： g_efd = epoll_create(MAX_EVENTS+1);  
         if (nfd < 0) {
             printf("epoll_wait error, exit\n");
             break;
@@ -277,7 +278,7 @@ int main(int argc, char *argv[])
             if ((events[i].events & EPOLLOUT) && (ev->events & EPOLLOUT)) {         //写就绪事件
                 ev->call_back(ev->fd, events[i].events, ev->arg);
             }
-        }
+        }//for 循环
     }
 
     /* 退出前释放所有资源 */

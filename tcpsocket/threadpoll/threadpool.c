@@ -22,7 +22,7 @@ typedef struct {
 /* 描述线程池相关信息 */
 struct threadpool_t {
     pthread_mutex_t lock;               /* 用于锁住本结构体 */    
-    pthread_mutex_t thread_counter;     /* 记录忙状态线程个数de琐 -- busy_thr_num */
+    pthread_mutex_t thread_counter;     /* 记录忙状态线程个数的锁 -- busy_thr_num */
     pthread_cond_t queue_not_full;      /* 当任务队列满时，添加任务的线程阻塞，等待此条件变量 */
     pthread_cond_t queue_not_empty;     /* 任务队列里不为空时，通知等待任务的线程 */
 
@@ -74,12 +74,12 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
             break;/*跳出do while*/
         }
 
-        pool->min_thr_num = min_thr_num;
-        pool->max_thr_num = max_thr_num;
+        pool->min_thr_num = min_thr_num; //传参
+        pool->max_thr_num = max_thr_num; //传参
         pool->busy_thr_num = 0;
         pool->live_thr_num = min_thr_num;               /* 活着的线程数 初值=最小线程数 */
         pool->queue_size = 0;                           /* 有0个产品 */
-        pool->queue_max_size = queue_max_size;
+        pool->queue_max_size = queue_max_size;//传参
         pool->queue_front = 0;
         pool->queue_rear = 0;
         pool->shutdown = false;                         /* 不关闭线程池 */
@@ -90,7 +90,7 @@ threadpool_t *threadpool_create(int min_thr_num, int max_thr_num, int queue_max_
             printf("malloc threads fail");
             break;
         }
-        memset(pool->threads, 0, sizeof(pthread_t)*max_thr_num);
+        memset(pool->threads, 0, sizeof(pthread_t)*max_thr_num);//清零
 
         /* 队列开辟空间 */
         pool->task_queue = (threadpool_task_t *)malloc(sizeof(threadpool_task_t)*queue_max_size);
@@ -183,7 +183,7 @@ void *threadpool_thread(void *threadpool)
                     pthread_mutex_unlock(&(pool->lock));
                     pthread_exit(NULL);
                 }
-            }
+            }// if >0
         }
 
         /*如果指定了true，要关闭线程池里的每个线程，自行退出处理*/
@@ -219,7 +219,7 @@ void *threadpool_thread(void *threadpool)
         pthread_mutex_lock(&(pool->thread_counter));
         pool->busy_thr_num--;                                       /*处理掉一个任务，忙状态数线程数-1*/
         pthread_mutex_unlock(&(pool->thread_counter));
-    }
+    } // while (true)
 
     pthread_exit(NULL);
 }
