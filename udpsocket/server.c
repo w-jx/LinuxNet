@@ -25,12 +25,15 @@ int main()
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in serv_addr, clit_addr;
     bzero(&serv_addr, sizeof(serv_addr)); //将结构体清零
+
     socklen_t clit_addr_len;
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(SERV_PORT);
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); //自
+
     int opt=1;
     setsockopt(sockfd,SOL_SOCKET,SO_REUSEADDR,(void*)&opt,sizeof(opt));
+    
     bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
     //这个服务器端的bind是不可少的，不管是UDP还是TCP
     printf("wait for connecting...\n");

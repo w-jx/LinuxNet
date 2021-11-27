@@ -25,6 +25,7 @@ int main()
     sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     struct sockaddr_in serv_addr, clit_addr;
     bzero(&serv_addr, sizeof(serv_addr)); //将结构体清零
+    
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(SERV_PORT);
     //serv_addr.sin_addr.s_addr = htonl(INADDR_ANY); //自
